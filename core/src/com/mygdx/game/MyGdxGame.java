@@ -24,8 +24,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		levels = new ArrayList<>();
 
 		// Load your levels here
-		levels.add(new Level("background1.png", new Vector2[]{new Vector2(1, 50), new Vector2(230, 70), new Vector2(110, 145),new Vector2(500, 50)}));
-		levels.add(new Level("background2.png", new Vector2[]{new Vector2(1, 1), new Vector2(1, 1)}));
+		levels.add(new Level("background1.png", new Vector2[]{new Vector2(1, 50), new Vector2(230, 70), new Vector2(110, 145), new Vector2(500, 50)}, new Vector2(500, 60)));
+		levels.add(new Level("background2.png", new Vector2[]{new Vector2(1, 50), new Vector2(1, 1)},new Vector2(500, 60) ));
 
 		currentLevel = 0; // Start with the first level
 		loadLevel(currentLevel);
@@ -37,6 +37,22 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// Handle user input and update the character
 		player.update(deltaTime, levels.get(currentLevel).getPlatforms());
+
+		// Check if the character's x-coordinate has reached the nextLevelCoordinate of the current level
+		if (player.getPosition().x >= levels.get(currentLevel).getNextLevelCoordinate().x) {
+			// Increment the currentLevel and load the next level
+			currentLevel++;
+			if (currentLevel < levels.size()) {
+				loadLevel(currentLevel);
+				// Reset the character's position or perform other level transition logic if needed
+				player.setPosition(1, 60); // Resetting character position, adjust as needed
+			} else {
+				// Handle the case where there are no more levels
+				// You can reset the game or take other actions
+				Gdx.app.exit(); // For example, exit the game when all levels are completed
+				return; // No need to continue rendering
+			}
+		}
 
 		// Clear the screen
 		Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -66,6 +82,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		batch.end();
 	}
+
+
 
 	@Override
 	public void dispose() {

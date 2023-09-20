@@ -202,6 +202,16 @@ public class PlayerCharacter {
         }
     }
 
+    // Get the current position of the player character
+    public Vector2 getPosition() {
+        return position;
+    }
+
+    // Set the position of the player character
+    public void setPosition(float x, float y) {
+        position.set(x, y);
+    }
+
     public void dispose() {
         for (TextureRegion frame : animationFrames) {
             frame.getTexture().dispose();

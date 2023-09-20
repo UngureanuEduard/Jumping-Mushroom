@@ -10,10 +10,14 @@ public class Level {
 
     private final ArrayList<Platform> spikes;
 
-    public Level(String backgroundPath, Vector2[] platformPositions) {
+    private final Vector2 nextLevelCoordinate;
+
+
+    public Level(String backgroundPath, Vector2[] platformPositions, Vector2 nextLevelCoordinate) {
         this.platforms = new ArrayList<>();
         this.spikes = new ArrayList<>();
         this.backgroundPath = backgroundPath;
+        this.nextLevelCoordinate = nextLevelCoordinate;
 
         for (Vector2 position : platformPositions) {
             platforms.add(new Platform(position.x, position.y, "platform.png"));
@@ -34,6 +38,10 @@ public class Level {
 
     public String getBackgroundPath() {
         return backgroundPath;
+    }
+
+    public Vector2 getNextLevelCoordinate() {
+        return nextLevelCoordinate;
     }
 
 }
