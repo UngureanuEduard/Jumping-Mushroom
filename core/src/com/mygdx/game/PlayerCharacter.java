@@ -1,9 +1,11 @@
 package com.mygdx.game;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+
 import java.util.ArrayList;
 
 public class PlayerCharacter {
@@ -21,7 +23,7 @@ public class PlayerCharacter {
     private boolean flipIdle;
 
     public PlayerCharacter() {
-        Texture spriteSheet = new Texture("mushroomwalk.png");
+        Texture spriteSheet = new Texture("Character/mushroomwalk.png");
         TextureRegion[][] tmp = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / 4, spriteSheet.getHeight());
 
         animationFrames = new TextureRegion[4];
@@ -30,7 +32,7 @@ public class PlayerCharacter {
         animationFrames[2] = tmp[0][2];
         animationFrames[3] = tmp[0][3];
 
-        idleTexture = new Texture("idle.png");
+        idleTexture = new Texture("Character/idle.png");
 
         position = new Vector2(1, 60);
         speed = 200;
@@ -54,7 +56,10 @@ public class PlayerCharacter {
         // Check if moving right (D key)
         if (MyGdxGame.isKeyPressedD()) {
             isMovingRight = true;
-            position.x += speed * deltaTime;
+            // Check if the character is not going beyond the right screen border
+            if (position.x + getWidth() < 600) {
+                position.x += speed * deltaTime;
+            }
         }
 
 
@@ -62,7 +67,10 @@ public class PlayerCharacter {
         // Check if moving left (A key)
         if (MyGdxGame.isKeyPressedA()) {
             isMovingLeft = true;
-            position.x -= speed * deltaTime;
+            // Check if the character is not going beyond the left screen border
+            if (position.x > 0) {
+                position.x -= speed * deltaTime;
+            }
         }
 
         // Jump logic (Space key)

@@ -6,7 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Json;
 
 import java.util.ArrayList;
 
@@ -23,12 +23,27 @@ public class MyGdxGame extends ApplicationAdapter {
 		player = new PlayerCharacter();
 		levels = new ArrayList<>();
 
-		// Load your levels here
-		levels.add(new Level("background1.png", new Vector2[]{new Vector2(1, 50), new Vector2(230, 70), new Vector2(110, 145), new Vector2(500, 50)}, new Vector2(500, 60)));
-		levels.add(new Level("background2.png", new Vector2[]{new Vector2(1, 50), new Vector2(1, 1)},new Vector2(500, 60) ));
+		// Load levels from the JSON file
+		Json json = new Json();
+		LevelData[] levelDataArray = json.fromJson(LevelData[].class, Gdx.files.internal("levels.json"));
+
+		for (LevelData levelData : levelDataArray) {
+			levels.add(new Level(
+					levelData.getBackgroundPath(),
+					levelData.getPlatformPositions(),
+					levelData.getNextLevelCoordinate(),
+					levelData.getMusicPath()
+			));
+		}
 
 		currentLevel = 0; // Start with the first level
 		loadLevel(currentLevel);
+
+		// Play song for the first level
+		if (currentLevel == 0) {
+			Level currentLevelObject = levels.get(currentLevel);
+			currentLevelObject.getLevelMusic().play();
+		}
 	}
 
 	@Override
@@ -43,14 +58,15 @@ public class MyGdxGame extends ApplicationAdapter {
 			// Increment the currentLevel and load the next level
 			currentLevel++;
 			if (currentLevel < levels.size()) {
+				Level currentLevelObject = levels.get(currentLevel);
 				loadLevel(currentLevel);
+				currentLevelObject.getLevelMusic().play();
 				// Reset the character's position or perform other level transition logic if needed
-				player.setPosition(1, 60); // Resetting character position, adjust as needed
+				player.setPosition(1, 60);
 			} else {
 				// Handle the case where there are no more levels
-				// You can reset the game or take other actions
-				Gdx.app.exit(); // For example, exit the game when all levels are completed
-				return; // No need to continue rendering
+				Gdx.app.exit();
+				return;
 			}
 		}
 

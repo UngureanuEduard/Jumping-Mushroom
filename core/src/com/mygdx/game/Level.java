@@ -1,5 +1,7 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
@@ -12,19 +14,25 @@ public class Level {
 
     private final Vector2 nextLevelCoordinate;
 
+    private final Music levelMusic;
 
-    public Level(String backgroundPath, Vector2[] platformPositions, Vector2 nextLevelCoordinate) {
+
+    public Level(String backgroundPath, Vector2[] platformPositions, Vector2 nextLevelCoordinate,String musicPath) {
         this.platforms = new ArrayList<>();
         this.spikes = new ArrayList<>();
         this.backgroundPath = backgroundPath;
         this.nextLevelCoordinate = nextLevelCoordinate;
 
+
+        // Load the music for this level
+        levelMusic = Gdx.audio.newMusic(Gdx.files.internal(musicPath));
+
         for (Vector2 position : platformPositions) {
-            platforms.add(new Platform(position.x, position.y, "platform.png"));
+            platforms.add(new Platform(position.x, position.y, "Background/platform.png"));
         }
 
         for (int x = 0; x < 700; x += 60) {
-            spikes.add(new Platform(x, 0, "spike.png"));
+            spikes.add(new Platform(x, 0, "Background/spike.png"));
         }
     }
 
@@ -43,5 +51,12 @@ public class Level {
     public Vector2 getNextLevelCoordinate() {
         return nextLevelCoordinate;
     }
+
+
+    public Music getLevelMusic() {
+        return levelMusic;
+    }
+
+
 
 }

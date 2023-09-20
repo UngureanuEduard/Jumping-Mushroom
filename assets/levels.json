@@ -1,0 +1,22 @@
+[
+  {
+    "backgroundPath": "Background/background1.png",
+    "platformPositions": [
+      {"x": 1, "y": 50},
+      {"x": 230, "y": 70},
+      {"x": 110, "y": 145},
+      {"x": 500, "y": 50}
+    ],
+    "nextLevelCoordinate": {"x": 500, "y": 60},
+    "musicPath": "MP3/Abandoned Hopes.mp3"
+  },
+  {
+    "backgroundPath": "Background/background2.png",
+    "platformPositions": [
+      {"x": 1, "y": 50},
+      {"x": 1, "y": 1}
+    ],
+    "nextLevelCoordinate": {"x": 500, "y": 60},
+    "musicPath": "MP3/Crimson Drive.mp3"
+  }
+]
