@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -31,16 +32,22 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture coinImage;
 	private boolean inMenu = true; // Indicates if the game is in the menu
 
+	private int lives = 3;
+	private Texture fullHeartTexture;
+	private Texture emptyHeartTexture;
+
 
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
-		player = new PlayerCharacter();
+		player = new PlayerCharacter(this);
 		levels = new ArrayList<>();
 		stage = new Stage();
-		Gdx.input.setInputProcessor(stage); // Set the stage as the input processor
+		Gdx.input.setInputProcessor(stage);
 		font = new BitmapFont(Gdx.files.internal("Background/WhitePeaberry.fnt"));
 		coinImage = new Texture("Background/score.png");
+		fullHeartTexture = new Texture("Background/FullHeart.png");
+		emptyHeartTexture = new Texture("Background/EmptyHeart.png");
 		// Load levels from the JSON file
 		Json json = new Json();
 		LevelData[] levelDataArray = json.fromJson(LevelData[].class, Gdx.files.internal("levels.json"));
@@ -51,8 +58,10 @@ public class MyGdxGame extends ApplicationAdapter {
 					levelData.getPlatformPositions(),
 					levelData.getNextLevelCoordinate(),
 					levelData.getMusicPath(),
-					levelData.getCoinPositions()
-			));
+					levelData.getCoinPositions(),
+					levelData.getEnemyStartPositions(),
+					levelData.getEnemyEndPositions()
+					));
 		}
 
 		currentLevel = 0; // Start with the first level
@@ -130,6 +139,21 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void render() {
+
+
+		if (getLives() <= 0) {
+			// Set the game to the game over state
+			inMenu = true;
+			coinCount = 0;
+			lives = 3; // Reset lives
+			currentLevel=0;
+			levels.get(currentLevel).getLevelMusic().play();
+			for (Coin coin : levels.get(currentLevel).getCoins()) {
+				coin.resetPosition();
+			}
+
+		}
+
 		float deltaTime = Gdx.graphics.getDeltaTime();
 
 		if (inMenu) {
@@ -179,6 +203,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 			batch.begin();
 
+
 			// Get the screen dimensions
 			float screenWidth = Gdx.graphics.getWidth();
 			float screenHeight = Gdx.graphics.getHeight();
@@ -191,10 +216,20 @@ public class MyGdxGame extends ApplicationAdapter {
 				platform.render(batch);
 			}
 
+			// Render enemies
+			for (Enemy enemy : levels.get(currentLevel).getEnemies()) {
+				enemy.render(batch,deltaTime);
+				enemy.update(deltaTime);
+			}
+
 
 			// Render spikes
 			for (Platform spike : levels.get(currentLevel).getSpikes()) {
 				spike.render(batch);
+			}
+
+			for (Enemy enemy : levels.get(currentLevel).getEnemies()) {
+				enemy.render(batch, deltaTime);
 			}
 
 
@@ -209,6 +244,22 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(coinImage, screenWidth - 100, screenHeight - 30 , 30, 30);
 			font.getData().setScale(2.0f);
 			font.draw(batch, String.valueOf(coinCount), screenWidth - 70, screenHeight+30);
+
+			// Draw hearts based on the number of lives
+			float heartX = 10; // X-coordinate for the hearts
+			float heartY = Gdx.graphics.getHeight() - 35	; // Y-coordinate for the hearts
+			float heartSpacing = 30; // Spacing between hearts
+
+			for (int i = 0; i < getLives(); i++) {
+				batch.draw(fullHeartTexture, heartX, heartY);
+				heartX += heartSpacing;
+			}
+
+			for (int i = 0; i < 3-getLives(); i++) {
+				batch.draw(emptyHeartTexture, heartX, heartY);
+				heartX += heartSpacing;
+			}
+
 
 			batch.end();
 		}
@@ -247,8 +298,17 @@ public class MyGdxGame extends ApplicationAdapter {
 	private boolean isCollidingWithCoin(Coin coin) {
 		Rectangle characterBounds = player.getBounds();
 		Rectangle coinBounds = coin.getBounds();
-
-		// Check if there is a collision between character and coin
 		return characterBounds.overlaps(coinBounds);
 	}
+
+	public int getLives() {
+		return lives;
+	}
+
+	public void setLives(int lives)
+	{
+		this.lives=lives;
+	}
+
+
 }

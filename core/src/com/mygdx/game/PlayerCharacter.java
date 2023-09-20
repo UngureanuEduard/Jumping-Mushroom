@@ -21,8 +21,10 @@ public class PlayerCharacter {
     private boolean isMovingRight;
     private boolean isMovingLeft;
     private boolean flipIdle;
+    private final MyGdxGame game;
 
-    public PlayerCharacter() {
+    public PlayerCharacter(MyGdxGame game) {
+        this.game = game;
         Texture spriteSheet = new Texture("Character/mushroomwalk.png");
         TextureRegion[][] tmp = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / 4, spriteSheet.getHeight());
 
@@ -84,6 +86,10 @@ public class PlayerCharacter {
             position.set(1, 60);
             isJumping = false;
             velocity.y = 0; // Reset jump velocity when on the ground
+
+            if (game.getLives() > 0) {
+                game.setLives(game.getLives() - 1);
+            }
         }
 
         // Apply gravity to the jump velocity

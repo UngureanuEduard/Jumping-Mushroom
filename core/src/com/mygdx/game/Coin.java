@@ -11,19 +11,17 @@ public class Coin {
     private final Vector2 position;
     private final TextureRegion[] coinFrames;
     private float stateTime;
-    private final Texture texture;
     private TextureRegion currentFrame;
+    private final Vector2 initialPosition;
 
     public Coin(float x, float y, String texturePath) {
         this.position = new Vector2(x, y);
-        this.texture = new Texture(texturePath);
-
+        Texture texture = new Texture(texturePath);
+        this.initialPosition = new Vector2(x, y);
         TextureRegion[][] tmp = TextureRegion.split(texture, 16, 16);
         coinFrames = new TextureRegion[tmp[0].length];
 
-        for (int i = 0; i < tmp[0].length; i++) {
-            coinFrames[i] = tmp[0][i];
-        }
+        System.arraycopy(tmp[0], 0, coinFrames, 0, tmp[0].length);
     }
     public void update(float deltaTime) {
         stateTime += deltaTime;
@@ -43,6 +41,8 @@ public class Coin {
     public void setPosition(float x, float y) {
         position.set(x, y);
     }
-
+    public void resetPosition() {
+        position.set(initialPosition);
+    }
 
 }

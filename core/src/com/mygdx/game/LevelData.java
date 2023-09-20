@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.Vector2;
 
 public class LevelData {
     private String backgroundPath;
+    private Vector2[] enemyStartPositions;
+    private Vector2[] enemyEndPositions; // Add enemy end positions
     private Vector2[] platformPositions;
 
     private Vector2[] coinPositions;
@@ -30,4 +32,13 @@ public class LevelData {
     public String getMusicPath() {
         return musicPath;
     }
+
+    public Vector2[] getEnemyStartPositions() {
+        return enemyStartPositions;
+    }
+
+    public Vector2[] getEnemyEndPositions() {
+        return enemyEndPositions;
+    }
+
 }
