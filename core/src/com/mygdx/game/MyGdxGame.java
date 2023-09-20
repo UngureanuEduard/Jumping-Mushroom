@@ -5,8 +5,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -24,7 +26,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	private int currentLevel;
 	private Texture backgroundTexture;
 	private Stage stage;
-
+	private int coinCount = 0;
+	private BitmapFont font;
+	Texture coinImage;
 	private boolean inMenu = true; // Indicates if the game is in the menu
 
 
@@ -35,7 +39,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		levels = new ArrayList<>();
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage); // Set the stage as the input processor
-
+		font = new BitmapFont(Gdx.files.internal("Background/WhitePeaberry.fnt"));
+		coinImage = new Texture("Background/score.png");
 		// Load levels from the JSON file
 		Json json = new Json();
 		LevelData[] levelDataArray = json.fromJson(LevelData[].class, Gdx.files.internal("levels.json"));
@@ -45,7 +50,8 @@ public class MyGdxGame extends ApplicationAdapter {
 					levelData.getBackgroundPath(),
 					levelData.getPlatformPositions(),
 					levelData.getNextLevelCoordinate(),
-					levelData.getMusicPath()
+					levelData.getMusicPath(),
+					levelData.getCoinPositions()
 			));
 		}
 
@@ -141,6 +147,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		} else {
 			// Handle user input and update the character
 			player.update(deltaTime, levels.get(currentLevel).getPlatforms());
+			for (Coin coin : levels.get(currentLevel).getCoins()) {
+				if (isCollidingWithCoin(coin)) {
+					// Handle coin collection
+					coinCount++;
+					coin.setPosition(-100, -100); // Move the coin off-screen to hide it
+				}
+			}
 
 			// Check if the character's x-coordinate has reached the nextLevelCoordinate of the current level
 			if (player.getPosition().x >= levels.get(currentLevel).getNextLevelCoordinate().x) {
@@ -178,13 +191,24 @@ public class MyGdxGame extends ApplicationAdapter {
 				platform.render(batch);
 			}
 
+
 			// Render spikes
 			for (Platform spike : levels.get(currentLevel).getSpikes()) {
 				spike.render(batch);
 			}
 
+
+			for (Coin coin : levels.get(currentLevel).getCoins()) {
+				coin.update(deltaTime); // Update the coin's animation
+				coin.render(batch);
+			}
 			// Render the character
 			player.render(batch);
+
+			// Coin counter
+			batch.draw(coinImage, screenWidth - 100, screenHeight - 30 , 30, 30);
+			font.getData().setScale(2.0f);
+			font.draw(batch, String.valueOf(coinCount), screenWidth - 70, screenHeight+30);
 
 			batch.end();
 		}
@@ -196,6 +220,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		player.dispose();
 		backgroundTexture.dispose();
 		stage.dispose();
+		font.dispose();
 	}
 
 	public void loadLevel(int levelIndex) {
@@ -217,5 +242,13 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	public static boolean isKeyPressedSpace() {
 		return Gdx.input.isKeyPressed(Input.Keys.SPACE);
+	}
+
+	private boolean isCollidingWithCoin(Coin coin) {
+		Rectangle characterBounds = player.getBounds();
+		Rectangle coinBounds = coin.getBounds();
+
+		// Check if there is a collision between character and coin
+		return characterBounds.overlaps(coinBounds);
 	}
 }

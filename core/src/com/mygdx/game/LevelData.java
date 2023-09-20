@@ -5,6 +5,8 @@ import com.badlogic.gdx.math.Vector2;
 public class LevelData {
     private String backgroundPath;
     private Vector2[] platformPositions;
+
+    private Vector2[] coinPositions;
     private Vector2 nextLevelCoordinate;
     private String musicPath;
 
@@ -15,6 +17,10 @@ public class LevelData {
 
     public Vector2[] getPlatformPositions() {
         return platformPositions;
+    }
+
+    public Vector2[] getCoinPositions() {
+        return coinPositions;
     }
 
     public Vector2 getNextLevelCoordinate() {
