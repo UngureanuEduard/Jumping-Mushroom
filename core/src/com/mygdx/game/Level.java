@@ -32,7 +32,8 @@ public class Level {
         return spikes;
     }
 
-    public String getBackgroundPath() { // Add this method to get the background path
+    public String getBackgroundPath() {
         return backgroundPath;
     }
+
 }

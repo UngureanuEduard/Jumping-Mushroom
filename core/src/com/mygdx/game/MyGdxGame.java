@@ -15,7 +15,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private PlayerCharacter player;
 	private ArrayList<Level> levels;
 	private int currentLevel;
-	private Texture backgroundTexture; // Declare backgroundTexture field
+	private Texture backgroundTexture;
 
 	@Override
 	public void create() {
@@ -23,7 +23,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		player = new PlayerCharacter();
 		levels = new ArrayList<>();
 
-		// Load your levels here (customize this part)
+		// Load your levels here
 		levels.add(new Level("background1.png", new Vector2[]{new Vector2(1, 50), new Vector2(230, 70), new Vector2(110, 145),new Vector2(500, 50)}));
 		levels.add(new Level("background2.png", new Vector2[]{new Vector2(1, 1), new Vector2(1, 1)}));
 

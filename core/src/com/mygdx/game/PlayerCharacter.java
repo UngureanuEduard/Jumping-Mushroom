@@ -122,8 +122,55 @@ public class PlayerCharacter {
     }
 
     private boolean isCollidingWithPlatform(Platform platform) {
-        return getBounds().overlaps(platform.getBounds());
+        Rectangle characterBounds = getBounds();
+        Rectangle platformBounds = platform.getBounds();
+
+        // Check if there is a collision between character and platform
+        if (characterBounds.overlaps(platformBounds)) {
+            // Calculate the overlap between character and platform
+            float overlapX = 0;
+            float overlapY = 0;
+
+            // Calculate the horizontal overlap
+            if (velocity.x > 0) {
+                overlapX = characterBounds.x + characterBounds.width - platformBounds.x;
+            } else if (velocity.x < 0) {
+                overlapX = platformBounds.x + platformBounds.width - characterBounds.x;
+            }
+
+            // Calculate the vertical overlap
+            if (velocity.y > 0) {
+                overlapY = characterBounds.y + characterBounds.height - platformBounds.y;
+            } else if (velocity.y < 0) {
+                overlapY = platformBounds.y + platformBounds.height - characterBounds.y;
+            }
+
+            // Resolve the collision based on the smaller overlap
+            if (Math.abs(overlapX) < Math.abs(overlapY)) {
+                // Horizontal collision
+                if (velocity.x > 0) {
+                    position.x -= overlapX;
+                } else if (velocity.x < 0) {
+                    position.x += overlapX;
+                }
+                velocity.x = 0;
+            } else {
+                // Vertical collision
+                if (velocity.y > 0) {
+                    position.y -= overlapY;
+                } else if (velocity.y < 0) {
+                    position.y += overlapY;
+                    isJumping = false;
+                }
+                velocity.y = 0;
+            }
+
+            return true; // There is a collision
+        }
+
+        return false; // No collision
     }
+
 
     public Rectangle getBounds() {
         return new Rectangle(position.x, position.y, getWidth(), getHeight());
